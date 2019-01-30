@@ -90,14 +90,15 @@ print ("Reading:",inf)
 olist = parsefile(inf)
 
 gsen = findGroundState(olist)
-print (gsen)
+#print (gsen)
 
 makeEnergiesRelativeGS(olist, gsen)
 
-for el in olist:
-  print(el)
+#for el in olist:
+#  print(el)
 
-with open('your_file.txt', 'w') as f:
+oname = 'fixed_csv_'+inf
+with open(oname, 'w') as f:
   for line in olist:
     for el in line:
       f.write("%s, " % el)
