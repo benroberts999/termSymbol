@@ -1,7 +1,5 @@
 #!/usr/bin/python3
 
-print ('ok')
-
 def extractEnergies(line):
   a =  line.split()[1:3]
   enau = float(a[0])
@@ -11,21 +9,19 @@ def extractEnergies(line):
 def getJandP(line):
   line = line.replace(',',' ')
   a = line.split()
-  #print(a[4],a[7])
   j = int(a[4])
   p = -1
   if a[7]=='even':
     p=1
-  #print(j,p)
   return [j,p]
 
-def getConfigs(line):
+def getConfigs(line, min_pc):
   line = line.strip('\n')
   a=line.split('  ')
   #print(a[-2:])
   st = a[-2]
   pc = float(a[-1].strip('%'))
-  if pc>20.:
+  if pc>min_pc:
     return [st,pc]
   return []
 
@@ -36,15 +32,16 @@ def get_gFactor(line):
 
 def parsefile(fn):
   import os
-  oalist = []
-  #fn = "dat.txt"
+  oalist = []  #output list (list of lists)
+  min_pc = 10. #only print electron configs > this %
   if os.path.exists(fn):
     file = open(fn, "r")
-    jp = []
+    jp = [] # J and parity
     lst = []
-    good_part = False
+    good_part = False #"good" part of the file
     for line in file:
       if(line.startswith("Solutions for J = ")):
+        #This is the start of a new level
         jp = getJandP(line)
         good_part = True
       elif not(good_part):
@@ -55,19 +52,22 @@ def parsefile(fn):
         lst = jp+e
         tmpcf = []
       elif(line.endswith("%\n")):
-        cf = getConfigs(line)
+        cf = getConfigs(line, min_pc)
         tmpcf += cf
       elif 'g-factor' in line:
+        # g-factor is last thing printed for each level
         g = get_gFactor(line)
         lst = lst + g + tmpcf
         oalist.append(lst)
         lst = []
       elif line.startswith("\n") and jp[0]==0:
+        # J=0 states don't have a g-factor printed
         g = [0]
         lst = lst + g + tmpcf
         oalist.append(lst)
         lst = []
   return oalist
+  # else return 1
 
 def findGroundState(list):
   gs_en = 1.
@@ -78,24 +78,30 @@ def findGroundState(list):
   return gs_en
 
 def makeEnergiesRelativeGS(list, gs_en):
+# Shifts energy levels elative to lowest calc'd state.
+# nb: only shifts the cm^-1 energies, leaves the a.u. as 'absolute' from CI
   for el in list:
     el[3] -= gs_en
 
 
-
+################################################################################
 import sys
-inf = sys.argv[1]
+
+inf = ""
+if len(sys.argv) < 2:
+  print("Run with input file from command line.")
+  print(" e.g.: ./parser.py file.txt")
+  inf = input("Or, enter input file here: ")
+else:
+  inf = sys.argv[1]
+
 print ("Reading:",inf)
 
 olist = parsefile(inf)
 
-gsen = findGroundState(olist)
-#print (gsen)
+gs_en = findGroundState(olist)
 
-makeEnergiesRelativeGS(olist, gsen)
-
-#for el in olist:
-#  print(el)
+makeEnergiesRelativeGS(olist, gs_en)
 
 oname = 'fixed_csv_'+inf
 with open(oname, 'w') as f:
@@ -104,17 +110,4 @@ with open(oname, 'w') as f:
       f.write("%s, " % el)
     f.write("\n")
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+print("Outputted to:",oname)
