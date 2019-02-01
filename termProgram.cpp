@@ -166,7 +166,7 @@ int main(){
     for(int mp = min_mp; mp <= max_mp; mp += d_mp){
       for(int L = min_L; L <= max_L; L++){
         double nr_g = gFactor_nr(mp,L,J);
-        double delta = fabs(in_g - nr_g)/nr_g;
+        double delta = fabs((in_g - nr_g)/nr_g);
         if (in_g==0 || delta<delta_g){
           //good state!
           std::string strJ = (int(2*J) % 2 == 0)? std::to_string((int)J)
