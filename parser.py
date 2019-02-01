@@ -104,9 +104,13 @@ print ("Reading:",inf)
 
 olist = parsefile(inf)
 
-gs_en = findGroundState(olist)
+doing_varAlpha = True
 
-makeEnergiesRelativeGS(olist, gs_en)
+if not doing_varAlpha
+#cant subtract gs of doing var-alpha, since GS will appear multiple
+# times in the file!
+  gs_en = findGroundState(olist)
+  makeEnergiesRelativeGS(olist, gs_en)
 
 oname = 'fixed_csv_'+inf
 with open(oname, 'w') as f:
