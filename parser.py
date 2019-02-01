@@ -40,7 +40,10 @@ def parsefile(fn):
     lst = []
     good_part = False #"good" part of the file
     for line in file:
-      if(line.startswith("Solutions for J = ")):
+      if(line.startswith("AlphaSquaredVariation")):
+        oalist.append([""]) 
+        oalist.append([line])
+      elif(line.startswith("Solutions for J = ")):
         #This is the start of a new level
         jp = getJandP(line)
         good_part = True
@@ -72,16 +75,18 @@ def parsefile(fn):
 def findGroundState(list):
   gs_en = 1.
   for el in list:
-    en = el[3]
-    if en < gs_en:
-      gs_en = en
+    if len(el)>2:
+      en = el[3]
+      if en < gs_en:
+        gs_en = en
   return gs_en
 
 def makeEnergiesRelativeGS(list, gs_en):
 # Shifts energy levels elative to lowest calc'd state.
 # nb: only shifts the cm^-1 energies, leaves the a.u. as 'absolute' from CI
   for el in list:
-    el[3] -= gs_en
+    if len(el)>2:
+      el[3] -= gs_en
 
 
 ################################################################################
