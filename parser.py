@@ -106,7 +106,7 @@ olist = parsefile(inf)
 
 doing_varAlpha = True
 
-if not doing_varAlpha
+if not doing_varAlpha:
 #cant subtract gs of doing var-alpha, since GS will appear multiple
 # times in the file!
   gs_en = findGroundState(olist)
