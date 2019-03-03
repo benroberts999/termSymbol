@@ -9,7 +9,7 @@ def extractEnergies(line):
 def getJandP(line):
   line = line.replace(',',' ')
   a = line.split()
-  j = int(a[4])
+  j = float(a[4])
   p = -1
   if a[7]=='even':
     p=1
